@@ -1,5 +1,5 @@
 <footer class="footer-section bg-dark text-light pt-5">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <div class="container">
     <div class="row">
 
@@ -32,6 +32,7 @@
           <li><a href="/GreenTech_web//pages/about.php" class="text-light text-decoration-none">About Us</a></li>
           <li><a href="/GreenTech_web//pages/services.php" class="text-light text-decoration-none">Services</a></li>
           <li><a href="/GreenTech_web//pages/contact.php" class="text-light text-decoration-none">Contact</a></li>
+          <li><a href="/greentech_web/Admin/login.php" class="text-light text-decoration-none">login</a></li>
         </ul>
       </div>
 

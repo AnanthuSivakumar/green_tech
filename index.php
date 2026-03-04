@@ -1,10 +1,8 @@
 <?php include 'includes/header.php'; ?>
 
-<?php if(isset($_GET['success']) && $_GET['success'] == 1): ?>
-  <div class="alert alert-success text-center mt-3">
-    Your message has been sent successfully!
-  </div>
-<?php endif; ?>
+<?php if(isset($success)) { ?>
+    <div class="alert alert-success"><?php echo $success; ?></div>
+<?php } ?>
 
 <!-- ================= HERO SECTION ================= -->
 <section class="hero-section">
@@ -145,8 +143,7 @@
 
 <!-- ================= CONTACT SECTION ================= -->
 <?php include 'pages/contact.php' ?>
-  <!-- <a href="admin.php" class="btn btn-light">Admin Panel</a> -->
-<!-- WhatsApp Floating Button -->
+
 <a href="https://wa.me/917025262747" 
    target="_blank" 
    class="whatsapp-float">

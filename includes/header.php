@@ -66,9 +66,8 @@
 </li>
 
 </ul>
+
 </div>
 </div>
 </nav>
 
-<!-- Spacer for fixed navbar -->
-<!-- <div style="margin-top:100px;"></div> -->

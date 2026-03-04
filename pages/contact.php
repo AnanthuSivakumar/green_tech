@@ -1,8 +1,8 @@
 <?php
-// ================== PROCESS FORM FIRST (NO HTML ABOVE THIS) ==================
+// ================== PROCESS FORM FIRST ==================
 
-include __DIR__ . '/../db.php';
-include __DIR__ . '/../config.php';
+include __DIR__ . '/../includes/db.php';
+include __DIR__ . '/../includes/config.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -14,32 +14,43 @@ require __DIR__ . '/../src/SMTP.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-if(isset($_POST['submit'])){
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $name    = trim($_POST['name']);
-    $phone   = trim($_POST['phone']);
-    $email   = trim($_POST['email']);
-    $message = trim($_POST['message']);
+    $name    = trim($_POST['name'] ?? '');
+    $phone   = trim($_POST['phone'] ?? '');
+    $email   = trim($_POST['email'] ?? '');
+    $message = trim($_POST['message'] ?? '');
     $urgent  = isset($_POST['urgent']) ? 1 : 0;
     $preferred_date = !empty($_POST['preferred_date']) ? $_POST['preferred_date'] : null;
 
     // ===== VALIDATION =====
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if (empty($name) || empty($phone) || empty($email) || empty($message)) {
+        $error = "All fields are required!";
+    } 
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Invalid Email Address!";
-    } elseif($urgent && empty($preferred_date)){
-        $error = "Please select preferred date & time!";
-    } else {
+    } 
+    elseif ($urgent && empty($preferred_date)) {
+        $error = "Please select preferred date & time for urgent request!";
+    } 
+    else {
 
         // ===== SAVE TO DATABASE =====
         $stmt = $conn->prepare("INSERT INTO contact_messages 
             (name, phone, email, message, urgent, preferred_date) 
             VALUES (?, ?, ?, ?, ?, ?)");
 
-        $stmt->bind_param("ssssss", 
-            $name, $phone, $email, $message, $urgent, $preferred_date
+        $stmt->bind_param(
+            "ssssis",   // Correct types
+            $name,
+            $phone,
+            $email,
+            $message,
+            $urgent,
+            $preferred_date
         );
 
-        if($stmt->execute()){
+        if ($stmt->execute()) {
 
             $mail = new PHPMailer(true);
 
@@ -60,6 +71,7 @@ if(isset($_POST['submit'])){
 
                 $mail->isHTML(false);
                 $mail->Subject = "New Contact Message";
+
                 $mail->Body =
                     "New Message Received:\n\n".
                     "Name: $name\n".
@@ -77,6 +89,7 @@ if(isset($_POST['submit'])){
 
                 $mail->addAddress($email);
                 $mail->Subject = "Thank You for Contacting Green Tech";
+
                 $mail->Body =
                     "Dear $name,\n\n".
                     "Thank you for contacting Green Tech Water Solutions.\n".
@@ -88,16 +101,14 @@ if(isset($_POST['submit'])){
 
                 $mail->send();
 
-                // ===== REDIRECT TO HOME =====
-                header("Location: ../index.php?success=1");
-                exit();
+              $success = "Message sent successfully!";
 
             } catch (Exception $e) {
                 $error = "Mailer Error: " . $mail->ErrorInfo;
             }
 
         } else {
-            $error = "Database Error: " . $conn->error;
+            $error = "Database Error: " . $stmt->error;
         }
 
         $stmt->close();
