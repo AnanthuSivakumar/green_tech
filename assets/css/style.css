@@ -188,6 +188,27 @@ background: linear-gradient(45deg, #e8ecee, #7cc7f0); border: none;
 
 /* ================= ABOUT SECTION ================= */
 
+.about-section h2 {
+    position: relative;
+    display: inline-block;
+}
+
+/* Underline effect */
+.about-section h2::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0;
+    height: 3px;
+    background: #eff1f3; /* underline color */
+    transition: width 0.4s ease;
+}
+
+/* Hover effect */
+.about-section h2:hover::after {
+    width: 100%;
+}
 .about-section {
     padding: 100px 0;
 
@@ -216,6 +237,28 @@ background: linear-gradient(45deg, #e8ecee, #7cc7f0); border: none;
     .about-section {
         text-align: center;
     }
+}
+
+h2 {
+    position: relative;
+    display: inline-block;
+}
+
+/* underline */
+h2::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 3px;
+    background-color: #e4e7eb;
+    transition: width 0.4s ease;
+}
+
+/* hover effect */
+h2:hover::after {
+    width: 100%;
 }
 /* ================= CARDS ================= */
 .card {
@@ -263,6 +306,8 @@ background: linear-gradient(45deg, #e8ecee, #7cc7f0); border: none;
 .card-body {
     flex: 1;
 }
+/* Make Bootstrap checkbox smaller */
+
 
 /* ================= CALL TO ACTION ================= */
 .call-to-action { background: linear-gradient(135deg, #003366 0%, #005f73 50%, #0a9396 100%); text-align: center; padding: 80px 0; }
@@ -280,7 +325,12 @@ form input::placeholder, form textarea::placeholder { color: #cce7ff; }
 form button { width: 100%; border-radius: 12px; background: linear-gradient(45deg, #00b4d8, #0077b6); border: none; font-weight: 600; padding: 12px; color: #fff; cursor: pointer; transition: 0.3s ease; }
 form button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,180,216,0.4); }
 
-
+#urgentCheck{
+    width:12px;
+    height:12px;
+    transform:scale(0.8);
+    cursor:pointer;
+}
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {

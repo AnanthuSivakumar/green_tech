@@ -1,126 +1,7 @@
-<?php
-// ================== PROCESS FORM FIRST ==================
-
-include __DIR__ . '/../includes/db.php';
-include __DIR__ . '/../includes/config.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require __DIR__ . '/../src/Exception.php';
-require __DIR__ . '/../src/PHPMailer.php';
-require __DIR__ . '/../src/SMTP.php';
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $name    = trim($_POST['name'] ?? '');
-    $phone   = trim($_POST['phone'] ?? '');
-    $email   = trim($_POST['email'] ?? '');
-    $message = trim($_POST['message'] ?? '');
-    $urgent  = isset($_POST['urgent']) ? 1 : 0;
-    $preferred_date = !empty($_POST['preferred_date']) ? $_POST['preferred_date'] : null;
-
-    // ===== VALIDATION =====
-    if (empty($name) || empty($phone) || empty($email) || empty($message)) {
-        $error = "All fields are required!";
-    } 
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Invalid Email Address!";
-    } 
-    elseif ($urgent && empty($preferred_date)) {
-        $error = "Please select preferred date & time for urgent request!";
-    } 
-    else {
-
-        // ===== SAVE TO DATABASE =====
-        $stmt = $conn->prepare("INSERT INTO contact_messages 
-            (name, phone, email, message, urgent, preferred_date) 
-            VALUES (?, ?, ?, ?, ?, ?)");
-
-        $stmt->bind_param(
-            "ssssis",   // Correct types
-            $name,
-            $phone,
-            $email,
-            $message,
-            $urgent,
-            $preferred_date
-        );
-
-        if ($stmt->execute()) {
-
-            $mail = new PHPMailer(true);
-
-            try {
-                // ===== SMTP SETTINGS =====
-                $mail->isSMTP();
-                $mail->Host       = MAIL_HOST;
-                $mail->SMTPAuth   = true;
-                $mail->Username   = MAIL_USER;
-                $mail->Password   = MAIL_PASS;
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port       = MAIL_PORT;
-
-                // ===== ADMIN EMAIL =====
-                $mail->setFrom(MAIL_USER, 'Green Tech');
-                $mail->addAddress(MAIL_USER);
-                $mail->addReplyTo($email, $name);
-
-                $mail->isHTML(false);
-                $mail->Subject = "New Contact Message";
-
-                $mail->Body =
-                    "New Message Received:\n\n".
-                    "Name: $name\n".
-                    "Phone: $phone\n".
-                    "Email: $email\n".
-                    "Urgent: ".($urgent ? 'Yes' : 'No')."\n".
-                    ($urgent ? "Preferred Date: $preferred_date\n" : "").
-                    "Message:\n$message";
-
-                $mail->send();
-
-                // ===== AUTO REPLY =====
-                $mail->clearAddresses();
-                $mail->clearReplyTos();
-
-                $mail->addAddress($email);
-                $mail->Subject = "Thank You for Contacting Green Tech";
-
-                $mail->Body =
-                    "Dear $name,\n\n".
-                    "Thank you for contacting Green Tech Water Solutions.\n".
-                    "We have received your message.\n".
-                    ($urgent ? "Your urgent request for $preferred_date has been noted.\n" : "").
-                    "Our team will contact you shortly.\n\n".
-                    "Regards,\nGreen Tech Team\n".
-                    "Phone: +91 7025262747";
-
-                $mail->send();
-
-              $success = "Message sent successfully!";
-
-            } catch (Exception $e) {
-                $error = "Mailer Error: " . $mail->ErrorInfo;
-            }
-
-        } else {
-            $error = "Database Error: " . $stmt->error;
-        }
-
-        $stmt->close();
-    }
-}
-
-// ================== LOAD HEADER AFTER PROCESSING ==================
-include __DIR__ . '/../includes/header.php';
-?>
+<?php include __DIR__ . '/../includes/header.php'; ?>
 
 <section class="section-padding">
-  <div class="container mt-5" >
+  <div class="container mt-5">
     <div class="row">
 
       <div class="col-md-6">
@@ -132,11 +13,7 @@ include __DIR__ . '/../includes/header.php';
 
       <div class="col-md-6">
 
-        <?php if(isset($error)){ ?>
-          <div class="alert alert-danger"><?php echo $error; ?></div>
-        <?php } ?>
-
-        <form method="post">
+        <form method="post" action="contact_message.php">
 
           <div class="mb-3">
             <input type="text" name="name" class="form-control"
@@ -160,8 +37,8 @@ include __DIR__ . '/../includes/header.php';
 
           <div class="form-check mb-3">
             <input type="checkbox" name="urgent"
-             class="form-check-input p-0" id="urgentCheck">
-            <label class="form-check-label" for="urgentCheck">
+             class="form-check-input" id="urgentCheck">
+            <label class="form-check-label m-1" for="urgentCheck">
               Urgent Requirement
             </label>
           </div>
@@ -193,11 +70,11 @@ document.getElementById("urgentCheck").addEventListener("change", function() {
 
     if (this.checked) {
         dateField.style.display = "block";
-        dateInput.setAttribute("required", "required");
+        dateInput.setAttribute("required","required");
     } else {
         dateField.style.display = "none";
         dateInput.removeAttribute("required");
-        dateInput.value = "";
+        dateInput.value="";
     }
 });
 </script>

@@ -23,7 +23,7 @@
 
     <!-- Center Heading -->
     <div class="text-center mb-5">
-      <h6 class="text-uppercase text-white fw-bold">About Us</h6>
+         <h2 class="mb-5">About Us</h2>
     </div>
 
     <div class="row align-items-center">
